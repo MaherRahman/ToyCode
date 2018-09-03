@@ -20,9 +20,6 @@ Even so, implementing a singleton is an interesting coding challenge.
 Suppose we wanted a singleton called InstallationDetails that stored some information, including the licenseNumber. How would we 
 implement this?
 
-Lazy Solution: 
-*/
-
 public final class InstallationDetails {
     private static InstallationDetails INSTANCE = null;
 
@@ -40,6 +37,36 @@ public final class InstallationDetails {
     public static InstallationDetails getInstance() {
         if(INSTANCE == null) {
             INSTANCE = new InstallationDetails();
+        }
+        return INSTANCE;
+    }
+}
+
+/* 
+To make the thread safe, we need to use synchronized to ensure multiple threads don't access this class at the same time. 
+*/ 
+
+public final class InstallationDetails {
+    private static volatile InstallationDetails INSTANCE = null;
+
+    private long licenseNumber;
+
+    public long getLicenseNumber() {
+        return licenseNumber;
+    }
+
+    // by making the constructor private, we prevent instantiation
+    private InstallationDetails() {
+        this.licenseNumber = ... ;
+    }
+
+    public static InstallationDetails getInstance() {
+        if(INSTANCE == null) {
+            synchronized (InstallationDetails.class) {
+                if(INSTANCE == null) {
+                    INSTANCE = new InstallationDetails();
+                }
+            }
         }
         return INSTANCE;
     }
